@@ -3,7 +3,8 @@ after_success:
 - '[[ ${TRAVIS_PULL_REQUEST} == ''false'' ]] && [[ ${TRAVIS_TAG} == '''' ]] && ./mvnw
   deploy -DreposityId=sonatype-nexus-snapshots -DskipTests --settings deploy-settings.xml'
 - '[[ ${TRAVIS_PULL_REQUEST} == ''false'' ]] && [[ ${TRAVIS_TAG} != '''' ]] && ./mvnw
-  deploy -DreposityId=sonatype-nexus-staging -DskipTests --settings deploy-settings.xml'
+  deploy -DreposityId=sonatype-nexus-staging -DskipTests -Drevision=${TRAVIS_TAG}
+  --settings deploy-settings.xml'
 before_cache:
 - rm -rf $HOME/CACHE; find $TRAVIS_BUILD_DIR -name .ekstazi | while read line; do
   du -sh $line;         DIR=$(dirname $HOME/CACHE$line); mkdir -p $DIR; cp -r $line
@@ -40,7 +41,7 @@ language: java
 script:
 - touch /tmp/NOW
 - echo GIBSTUDYSTART $(date)
-- ./mvnw clean verify ${TRAVIS_TAG+-Drevision=${TRAVIS_TAG}}
+- ./mvnw clean verify ${TRAVIS_TAG:+-Drevision=${TRAVIS_TAG}}
 - echo GIBSTUDYEND $(date)
 - cd $TRAVIS_BUILD_DIR
 - echo TESTNUM $(find . -name TEST-*.xml -newer /tmp/NOW | wc -l)
