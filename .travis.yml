@@ -1,22 +1,49 @@
-language: java
-sudo: false
-
-env:
-  - TRAVIS_NODE_VERSION="lts/*"
-
+after_success:
+- ./mvnw jacoco:report coveralls:report
+- '[[ ${TRAVIS_PULL_REQUEST} == ''false'' ]] && [[ ${TRAVIS_TAG} == '''' ]] && ./mvnw
+  deploy -DreposityId=sonatype-nexus-snapshots -DskipTests --settings deploy-settings.xml'
+- '[[ ${TRAVIS_PULL_REQUEST} == ''false'' ]] && [[ ${TRAVIS_TAG} != '''' ]] && ./mvnw
+  deploy -DreposityId=sonatype-nexus-staging -DskipTests --settings deploy-settings.xml'
+before_cache:
+- rm -rf $HOME/CACHE; find $TRAVIS_BUILD_DIR -name .ekstazi | while read line; do
+  du -sh $line;         DIR=$(dirname $HOME/CACHE$line); mkdir -p $DIR; cp -r $line
+  $DIR; done
+- echo CACHESIZE $(du -sk $HOME/CACHE)
+- cp /tmp/classpathFile $HOME/CACHE/classpathFile
+before_install:
+- if [ "$TRAVIS_OS_NAME" == "osx" ];        then sed -i '' 's/<gib.enabled>true/<gib.enabled>false/'
+  $TRAVIS_BUILD_DIR/pom.xml;        else sed -i 's/<gib.enabled>true/<gib.enabled>false/'
+  $TRAVIS_BUILD_DIR/pom.xml;        fi
+- find $HOME/CACHE -name .ekstazi | while read line; do du -sh $line;         DIR=$(dirname
+  ${line#$HOME/CACHE}); if [[ -d ${DIR#.ekstazi/} ]]; then cp -r $line $DIR; fi; done
+- if [[ -n "$DECRYPT_KEYPHRASE" ]]; then openssl aes-256-cbc -d -pass "env:DECRYPT_KEYPHRASE"
+  -in .gnupg.tar.enc | tar xv; fi
+- if [[ ${TRAVIS_TAG} != "" ]]; then ./mvnw versions:set -DnewVersion="${TRAVIS_TAG}";
+  fi
+- nvm install ${NODE_VERSION} && nvm use ${NODE_VERSION}
+- npm install -g yarn
+before_script:
+- find $TRAVIS_BUILD_DIR -name .ekstazi | while read line; do rm -rf $line; done
+- find $HOME/CACHE -name .ekstazi | while read line; do du -sh $line;         DIR=$(dirname
+  ${line#$HOME/CACHE}); if [[ -d ${DIR#.ekstazi/} ]]; then cp -r $line $DIR; fi; done
+- if [ "$TRAVIS_OS_NAME" == "osx" ];    then sed -i '' 's/<gib.enabled>false/<gib.enabled>true/'
+  $TRAVIS_BUILD_DIR/pom.xml;    else sed -i 's/<gib.enabled>false/<gib.enabled>true/'
+  $TRAVIS_BUILD_DIR/pom.xml;    fi
+- if [[ -e $HOME/CACHE/classpathFile ]]; then cp $HOME/CACHE/classpathFile /tmp/;
+  fi
 cache:
   directories:
-    - $HOME/.m2
-    - $HOME/.npm
-
-before_install:
-  - 'if [[ -n "$DECRYPT_KEYPHRASE" ]]; then openssl aes-256-cbc -d -pass "env:DECRYPT_KEYPHRASE" -in .gnupg.tar.enc | tar xv; fi'
-  - 'if [[ ${TRAVIS_TAG} != "" ]]; then ./mvnw versions:set -DnewVersion="${TRAVIS_TAG}"; fi'
-  - 'nvm install ${TRAVIS_NODE_VERSION} && nvm use ${TRAVIS_NODE_VERSION}'
-
-script: ./mvnw verify ${TRAVIS_TAG:+-Drevision=${TRAVIS_TAG}}
-
-after_success:
-  - ./mvnw jacoco:report coveralls:report
-  - "[[ ${TRAVIS_PULL_REQUEST} == 'false' ]] && [[ ${TRAVIS_TAG} == '' ]] && ./mvnw deploy -DreposityId=sonatype-nexus-snapshots -DskipTests --settings deploy-settings.xml"
-  - "[[ ${TRAVIS_PULL_REQUEST} == 'false' ]] && [[ ${TRAVIS_TAG} != '' ]] && ./mvnw deploy -DreposityId=sonatype-nexus-staging -DskipTests -Drevision=${TRAVIS_TAG} --settings deploy-settings.xml"
+  - $HOME/.m2
+  - $HOME/CACHE
+  yarn: true
+env:
+- NODE_VERSION=4
+language: java
+script:
+- touch /tmp/NOW
+- echo GIBSTUDYSTART $(date)
+- ./mvnw clean verify
+- echo GIBSTUDYEND $(date)
+- cd $TRAVIS_BUILD_DIR
+- echo TESTNUM $(find . -name TEST-*.xml -newer /tmp/NOW | wc -l)
+sudo: false

@@ -1,5 +1,5 @@
-codecentric's Spring Boot Admin
-===============================
+spring-boot-admin
+=================
 [![Apache License 2](https://img.shields.io/badge/license-ASF2-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0.txt)
 [![Build Status](https://travis-ci.org/codecentric/spring-boot-admin.svg?branch=master)](https://travis-ci.org/codecentric/spring-boot-admin)
 [![Coverage Status](https://coveralls.io/repos/codecentric/spring-boot-admin/badge.svg)](https://coveralls.io/r/codecentric/spring-boot-admin)
@@ -7,9 +7,9 @@ codecentric's Spring Boot Admin
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/de.codecentric/spring-boot-admin/badge.svg)](https://maven-badges.herokuapp.com/maven-central/de.codecentric/spring-boot-admin/)
 [![Gitter](https://badges.gitter.im/codecentric/spring-boot-admin.svg)](https://gitter.im/codecentric/spring-boot-admin?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
-This community project provides an admin interface for [Spring Boot <sup>®</sup>](http://projects.spring.io/spring-boot/ "Official Spring-Boot website") applications.
+This is a simple admin interface for [Spring Boot](http://projects.spring.io/spring-boot/ "Official Spring-Boot website") applications.
 
-It provides the following features for registered application.
+This application provides a simple UI to administrate Spring Boot applications. It provides the following features for registered application.
 
 * Show health status
 * Show details, like
@@ -27,36 +27,31 @@ It provides the following features for registered application.
 * View traces
 * Hystrix-Dashboard integration
 * Download heapdump
-* Notification on status change (via e-mail, Slack, Hipchat, ...)
+* Notification on status change (via mail, Slack, Hipchat, ...)
 * Event journal of status changes (non persistent)
 
 ## Getting Started
 
-[A quick guide](http://codecentric.github.io/spring-boot-admin/1.5.7/#getting-started) to get started can be found in our docs.
+[A quick guide](http://codecentric.github.io/spring-boot-admin/1.5.5/#getting-started) to get started can be found in our docs.
 
 ## Getting Help
 
-Having trouble with codecentric's Spring Boot Admin? We’d like to help!
+Having trouble with Spring Boot Admin? We’d like to help!
 
- * Check the [reference documentation](http://codecentric.github.io/spring-boot-admin/current/).
+ * Check the [reference documentation](http://codecentric.github.io/spring-boot-admin/1.5.5/).
  
  * Ask a question on [stackoverflow.com](http://stackoverflow.com/questions/tagged/spring-boot-admin) - we monitor questions tagged with `spring-boot-admin`.
  
  * Ask for help in our [spring-boot-admin Gitter chat](https://gitter.im/codecentric/spring-boot-admin)
  
- * Report bugs at http://github.com/codecentric/spring-boot-admin/issues.
+ * Report bugs with Spring Boot Admin at http://github.com/codecentric/spring-boot-admin/issues.
 
 ## Reference Guide
-[Version 1.5.7](http://codecentric.github.io/spring-boot-admin/1.5.7/)
+[Version 1.5.5](http://codecentric.github.io/spring-boot-admin/1.5.5/)
 
 [Version 1.4.6](http://codecentric.github.io/spring-boot-admin/1.4.6/)
 
 [Version 1.3.7](http://codecentric.github.io/spring-boot-admin/1.3.7/)
-
-## Trademarks and licenses
-The source code of codecentric's Spring Boot Admin is licensed under [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0)
-
-Spring, Spring Boot and Spring Cloud are trademarks of [Pivotal Software, Inc.](https://pivotal.io/) in the U.S. and other countries.
 
 ## Screenshots
 
@@ -104,9 +99,13 @@ You can access snapshot builds from the sonatype repository:
 ```
 
 ## Build
-In order to build spring-boot-admin you need to have node.js and npm on your `$PATH`.
+In order to build spring-boot-admin you need to have node.js and npm on your `PATH`.
 
 ```shell
 mvn clean package
 ```
 
+## Set version for next release
+```shell
+mvn versions:set versions:commit -DnewVersion=1.0.0-SNAPSHOT
+```

@@ -1,15 +1,16 @@
+info:
+  stage: test
+
 spring:
   application:
     name: spring-boot-admin-sample-war
   boot:
     admin:
-      client:
-        url: http://localhost:8080
+      url: http://localhost:8080
+  cloud:
+    config:
+      enabled: false
 
-management:
-  endpoints:
-    web:
-      expose: "*"
-  endpoint:
-    health:
-      show-details: true
+endpoints:
+  health:
+    sensitive: false

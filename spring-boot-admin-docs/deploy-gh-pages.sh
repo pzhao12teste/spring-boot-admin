@@ -11,21 +11,22 @@
 ##
 set -o errexit -o nounset
 
+PROJECT_VERSION=$1
+
 GH_URL="https://${GH_TOKEN}@github.com/codecentric/spring-boot-admin.git"
 TEMPDIR="$(mktemp -d /tmp/gh-pages.XXX)"
-TARGET_DIR="${TRAVIS_BRANCH/master/current}"
 
 echo "Cloning gh-pages branch..."
-git clone --branch gh-pages --single-branch --depth 1 --config user.name="Johannes Edmeier" --config user.email="johannes.edmeier@codecentric.de" "$GH_URL" "$TEMPDIR"
+git clone --branch gh-pages --single-branch --depth 1 --config user.name="Johannes Edmeier" --config user.email="johannes.edmeier@gmail.com" "$GH_URL" "$TEMPDIR"
 
-if [[ -d "$TEMPDIR"/"${TARGET_DIR}" ]]; then
-   echo "Cleaning ${TARGET_DIR}..."
-   rm -rf "$TEMPDIR"/"${TARGET_DIR}"
+if [[ -d "$TEMPDIR"/"${PROJECT_VERSION}-SNAPSHOT" ]]; then
+   echo "Removing ${PROJECT_VERSION}-SNAPSHOT..."
+   rm -rf "$TEMPDIR"/"${PROJECT_VERSION}-SNAPSHOT"
 fi
 
 echo "Copying new docs..."
-mkdir -p "$TEMPDIR"/"${TARGET_DIR}"
-cp -r target/generated-docs/* "$TEMPDIR"/"${TARGET_DIR}"/
+mkdir -p "$TEMPDIR"/"${PROJECT_VERSION}"
+cp -r target/generated-docs/* "$TEMPDIR"/"${PROJECT_VERSION}"/
 
 pushd "$TEMPDIR" >/dev/null
 git add --all .
@@ -34,7 +35,7 @@ if git diff-index --quiet HEAD; then
   echo "No changes detected."
 else
   echo "Commit changes..."
-  git commit --message "Docs for ${TARGET_DIR}"
+  git commit --message "Docs for ${PROJECT_VERSION}"
   echo "Pushing gh-pages..."
   git push origin gh-pages
 fi
@@ -42,4 +43,4 @@ fi
 popd >/dev/null
 
 rm -rf "$TEMPDIR"
-exit 0
+exit 0 
