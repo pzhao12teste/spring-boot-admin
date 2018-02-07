@@ -18,8 +18,6 @@ before_install:
   ${line#$HOME/CACHE}); if [[ -d ${DIR#.ekstazi/} ]]; then cp -r $line $DIR; fi; done
 - if [[ -n "$DECRYPT_KEYPHRASE" ]]; then openssl aes-256-cbc -d -pass "env:DECRYPT_KEYPHRASE"
   -in .gnupg.tar.enc | tar xv; fi
-- if [[ ${TRAVIS_TAG} != "" ]]; then ./mvnw versions:set -DnewVersion="${TRAVIS_TAG}";
-  fi
 - nvm install ${NODE_VERSION} && nvm use ${NODE_VERSION}
 - npm install -g yarn
 before_script:
@@ -42,7 +40,7 @@ language: java
 script:
 - touch /tmp/NOW
 - echo GIBSTUDYSTART $(date)
-- ./mvnw clean verify
+- ./mvnw clean verify ${TRAVIS_TAG+-Drevision=${TRAVIS_TAG}}
 - echo GIBSTUDYEND $(date)
 - cd $TRAVIS_BUILD_DIR
 - echo TESTNUM $(find . -name TEST-*.xml -newer /tmp/NOW | wc -l)
