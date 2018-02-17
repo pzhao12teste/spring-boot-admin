@@ -19,8 +19,9 @@ before_install:
   ${line#$HOME/CACHE}); if [[ -d ${DIR#.ekstazi/} ]]; then cp -r $line $DIR; fi; done
 - if [[ -n "$DECRYPT_KEYPHRASE" ]]; then openssl aes-256-cbc -d -pass "env:DECRYPT_KEYPHRASE"
   -in .gnupg.tar.enc | tar xv; fi
-- nvm install ${NODE_VERSION} && nvm use ${NODE_VERSION}
-- npm install -g yarn
+- if [[ ${TRAVIS_TAG} != "" ]]; then ./mvnw versions:set -DnewVersion="${TRAVIS_TAG}";
+  fi
+- nvm install ${TRAVIS_NODE_VERSION} && nvm use ${TRAVIS_NODE_VERSION}
 before_script:
 - find $TRAVIS_BUILD_DIR -name .ekstazi | while read line; do rm -rf $line; done
 - find $HOME/CACHE -name .ekstazi | while read line; do du -sh $line;         DIR=$(dirname
@@ -33,15 +34,15 @@ before_script:
 cache:
   directories:
   - $HOME/.m2
+  - $HOME/.npm
   - $HOME/CACHE
-  yarn: true
 env:
-- NODE_VERSION=4
+- TRAVIS_NODE_VERSION="lts/*"
 language: java
 script:
 - touch /tmp/NOW
 - echo GIBSTUDYSTART $(date)
-- ./mvnw clean verify ${TRAVIS_TAG:+-Drevision=${TRAVIS_TAG}}
+- ./mvnw verify ${TRAVIS_TAG:+-Drevision=${TRAVIS_TAG}}
 - echo GIBSTUDYEND $(date)
 - cd $TRAVIS_BUILD_DIR
 - echo TESTNUM $(find . -name TEST-*.xml -newer /tmp/NOW | wc -l)
